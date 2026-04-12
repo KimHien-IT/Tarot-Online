@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ Tarot Oracle ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8cc7a;
+    --gold-dim: #7a6230;
+    --ink: #0a080f;
+    --deep: #110d1a;
+    --mid: #1c1628;
+    --surface: #241e35;
+    --mist: rgba(201,168,76,0.08);
+    --glow: rgba(201,168,76,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    color: #d4c5a9;
+    font-family: 'EB Garamond', serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Star field */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,220,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,220,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 40% 8%, rgba(255,255,220,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 30%, rgba(255,255,220,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 20%, rgba(255,255,220,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 85% 12%, rgba(255,255,220,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 45%, rgba(255,255,220,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 65%, rgba(255,255,220,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 80%, rgba(255,255,220,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 60% 70%, rgba(255,255,220,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 78% 85%, rgba(255,255,220,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 90%, rgba(255,255,220,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 48% 55%, rgba(255,255,220,0.3) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 95% 75%, rgba(255,255,220,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 95%, rgba(255,255,220,0.5) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+    animation: twinkle 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  /* Nebula glow */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(60,20,90,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 30%, rgba(20,40,90,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 50% 90%, rgba(80,30,50,0.2) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    padding: 3rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .eye-symbol {
+    width: 52px;
+    height: 52px;
+    opacity: 0.85;
+  }
+
+  .site-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(201,168,76,0.5), 0 0 60px rgba(201,168,76,0.2);
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+  }
+
+  .site-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  .divider {
+    width: 220px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    margin: 0.2rem 0;
+  }
+
+  /* Card stage */
+  .card-stage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 380px;
+    perspective: 1200px;
+  }
+
+  .card-slot {
+    position: relative;
+    width: 240px;
+    height: 420px;
+  }
+
+  /* Idle placeholder */
+  .card-placeholder {
+    position: absolute;
+    inset: 0;
+    border: 1px dashed rgba(201,168,76,0.2);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: var(--mist);
+    transition: opacity 0.5s;
+  }
+
+  .card-placeholder.hidden { opacity: 0; pointer-events: none; }
+
+  .placeholder-rune {
+    font-size: 2.5rem;
+    opacity: 0.3;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .placeholder-text {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  /* The actual card */
+  .card-flip-container {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    opacity: 0;
+    transform: rotateY(90deg) scale(0.8);
+    transition: none;
+  }
+
+  .card-flip-container.revealed {
+    animation: cardReveal 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes cardReveal {
+    0% {
+      opacity: 0;
+      transform: rotateY(90deg) scale(0.7) translateY(30px);
+    }
+    40% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      transform: rotateY(0deg) scale(1) translateY(0);
+    }
+  }
+
+  .card-img-wrap {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(201,168,76,0.3),
+      0 0 25px rgba(201,168,76,0.15),
+      0 30px 60px rgba(0,0,0,0.8),
+      inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  .card-img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
+    z-index: 2;
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+  }
+
+  .card-img.reversed {
+    transform: rotate(180deg);
+  }
+
+  .card-glow {
+    position: absolute;
+    inset: -20px;
+    border-radius: 20px;
+    background: radial-gradient(ellipse at center, rgba(201,168,76,0.18) 0%, transparent 65%);
+    animation: pulseGlow 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* Particle burst */
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    top: 50%;
+    left: 50%;
+    animation: particleBurst 1.2s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes particleBurst {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.3); opacity: 0; }
+  }
+
+  /* Card info */
+  .card-info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s 0.6s ease, transform 0.6s 0.6s ease;
+  }
+
+  .card-info.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+    font-weight: 600;
+    color: var(--gold-light);
+    text-shadow: 0 0 20px rgba(201,168,76,0.4);
+    letter-spacing: 0.05em;
+  }
+
+  .card-number {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  .orientation-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 1px solid;
+    margin-top: 0.2rem;
+  }
+
+  .orientation-badge.upright {
+    background: rgba(201,168,76,0.1);
+    border-color: rgba(201,168,76,0.35);
+    color: var(--gold-light);
+  }
+
+  .orientation-badge.reversed {
+    background: rgba(150,80,80,0.15);
+    border-color: rgba(180,80,80,0.35);
+    color: #e09090;
+  }
+
+  .card-meaning {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #9a8e7a;
+    max-width: 400px;
+    line-height: 1.7;
+    padding: 0 1rem;
+  }
+
+  /* Draw button */
+  .btn-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .btn-draw {
+    position: relative;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    border: none;
+    padding: 1rem 2.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.3s;
+    box-shadow: 0 0 20px rgba(201,168,76,0.3), 0 4px 20px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+
+  .btn-draw::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+
+  .btn-draw:hover::before { transform: translateX(100%); }
+
+  .btn-draw:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 35px rgba(201,168,76,0.5), 0 8px 30px rgba(0,0,0,0.6);
+  }
+
+  .btn-draw:active { transform: scale(0.97) translateY(0); }
+
+  .btn-draw.spinning {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .btn-icon { margin-right: 0.5rem; }
+
+  /* Corner ornaments */
+  .ornament {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    opacity: 0.18;
+  }
+  .ornament-tl { top: 16px; left: 16px; }
+  .ornament-tr { top: 16px; right: 16px; transform: scaleX(-1); }
+  .ornament-bl { bottom: 16px; left: 16px; transform: scaleY(-1); }
+  .ornament-br { bottom: 16px; right: 16px; transform: scale(-1); }
+
+  /* Spread history row */
+  .history-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    text-align: center;
+  }
+
+  .history-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 500px;
+  }
+
+  .history-card {
+    width: 44px;
+    height: 76px;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid rgba(201,168,76,0.2);
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.3s;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .history-card:hover {
+    box-shadow: 0 0 12px rgba(201,168,76,0.35);
+    transform: translateY(-4px) scale(1.05);
+  }
+
+  .history-card.show {
+    opacity: 0.7;
+    transform: translateY(0) scale(1);
+  }
+
+  .history-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .history-card.rev img { transform: rotate(180deg); }
+
+  footer {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.2);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- Corner ornaments -->
+<svg class="ornament ornament-tl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 4 L4 40 L8 40 L8 8 L40 8 L40 4 Z" fill="#c9a84c"/>
+  <path d="M4 4 L20 20" stroke="#c9a84c" stroke-width="1"/>
+  <circle cx="4" cy="4" r="3" fill="#c9a84c"/>
+  <path d="M14 4 L4 14" stroke="#c9a84c" stroke-width="0.5" opacity="0.5"/>
+  <path d="M24 4 L4 24" stroke="#c9a84c" stroke-width="0.5" opacity="0.5"/>
+</svg>
+<svg class="ornament ornament-tr" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 4 L4 40 L8 40 L8 8 L40 8 L40 4 Z" fill="#c9a84c"/>
+  <path d="M4 4 L20 20" stroke="#c9a84c" stroke-width="1"/>
+  <circle cx="4" cy="4" r="3" fill="#c9a84c"/>
+</svg>
+<svg class="ornament ornament-bl" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 4 L4 40 L8 40 L8 8 L40 8 L40 4 Z" fill="#c9a84c"/>
+  <path d="M4 4 L20 20" stroke="#c9a84c" stroke-width="1"/>
+  <circle cx="4" cy="4" r="3" fill="#c9a84c"/>
+</svg>
+<svg class="ornament ornament-br" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 4 L4 40 L8 40 L8 8 L40 8 L40 4 Z" fill="#c9a84c"/>
+  <path d="M4 4 L20 20" stroke="#c9a84c" stroke-width="1"/>
+  <circle cx="4" cy="4" r="3" fill="#c9a84c"/>
+</svg>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <svg class="eye-symbol" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="26" cy="26" rx="22" ry="13" stroke="#c9a84c" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="26" cy="26" r="7" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+      <circle cx="26" cy="26" r="3" fill="#c9a84c" opacity="0.9"/>
+      <line x1="4" y1="26" x2="10" y2="26" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+      <line x1="42" y1="26" x2="48" y2="26" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+      <path d="M26 4 L26 10 M26 42 L26 48" stroke="#c9a84c" stroke-width="0.8" opacity="0.3"/>
+      <path d="M12 12 L16 16 M36 36 L40 40 M40 12 L36 16 M12 40 L16 36" stroke="#c9a84c" stroke-width="0.8" opacity="0.2"/>
+    </svg>
+    <div class="site-title">Tarot Oracle</div>
+    <div class="divider"></div>
+    <div class="site-subtitle">Bí ẩn của vũ trụ trong từng lá bài</div>
+  </header>
+
+  <!-- Card stage -->
+  <div class="card-stage">
+    <div class="card-slot" id="cardSlot">
+      <div class="card-placeholder" id="placeholder">
+        <div class="placeholder-rune">✦</div>
+        <div class="placeholder-text">Tập trung tâm trí<br>rồi rút bài</div>
+      </div>
+      <div class="card-flip-container" id="cardFlip">
+        <div class="card-img-wrap">
+          <img class="card-img" id="cardImg" src="" alt="">
+        </div>
+        <div class="card-glow"></div>
+        <div class="particles" id="particles"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card info -->
+  <div class="card-info" id="cardInfo">
+    <div class="card-number" id="cardNumber"></div>
+    <div class="card-name" id="cardName"></div>
+    <div class="orientation-badge" id="orientBadge"></div>
+    <div class="card-meaning" id="cardMeaning"></div>
+  </div>
+
+  <!-- Button -->
+  <div class="btn-wrap">
+    <button class="btn-draw" id="btnDraw" onclick="drawCard()">
+      <span class="btn-icon">✦</span>Rút Bài
+    </button>
+  </div>
+
+  <!-- History -->
+  <div class="history-label" id="histLabel" style="display:none">Các lá đã rút</div>
+  <div class="history-row" id="historyRow"></div>
+
+  <footer>Rider-Waite Tarot · 78 Lá Bài · © Public Domain</footer>
+</div>
+
+<script>
+const BASE = 'https://sacred-texts.com/tarot/pkt/img/';
+
+const CARDS = [
+  // Major Arcana (0–21)
+  { id: 'ar00', name: 'The Fool', label: 'Số 0 · Major Arcana', meaning: 'Khởi đầu mới, sự ngây thơ, tiềm năng vô hạn, hành trình mạo hiểm.' },
+  { id: 'ar01', name: 'The Magician', label: 'Số I · Major Arcana', meaning: 'Ý chí, sức mạnh, kỹ năng, khả năng biến ý tưởng thành hiện thực.' },
+  { id: 'ar02', name: 'The High Priestess', label: 'Số II · Major Arcana', meaning: 'Trực giác, tri thức ẩn, sự thụ động, bí ẩn nội tâm.' },
+  { id: 'ar03', name: 'The Empress', label: 'Số III · Major Arcana', meaning: 'Sự phong nhiêu, sáng tạo, thiên nhiên, nuôi dưỡng và phong phú.' },
+  { id: 'ar04', name: 'The Emperor', label: 'Số IV · Major Arcana', meaning: 'Quyền lực, trật tự, ổn định, nền tảng vững chắc.' },
+  { id: 'ar05', name: 'The Hierophant', label: 'Số V · Major Arcana', meaning: 'Truyền thống, tín ngưỡng, giáo huấn, quy ước xã hội.' },
+  { id: 'ar06', name: 'The Lovers', label: 'Số VI · Major Arcana', meaning: 'Tình yêu, hài hòa, lựa chọn, sự hợp nhất của đối lập.' },
+  { id: 'ar07', name: 'The Chariot', label: 'Số VII · Major Arcana', meaning: 'Chiến thắng, ý chí kiên định, kiểm soát bản thân, vượt qua thử thách.' },
+  { id: 'ar08', name: 'Strength', label: 'Số VIII · Major Arcana', meaning: 'Dũng cảm nội tâm, lòng kiên nhẫn, ảnh hưởng nhẹ nhàng mà mạnh mẽ.' },
+  { id: 'ar09', name: 'The Hermit', label: 'Số IX · Major Arcana', meaning: 'Tìm kiếm nội tâm, cô đơn chữa lành, ánh sáng dẫn đường.' },
+  { id: 'ar10', name: 'Wheel of Fortune', label: 'Số X · Major Arcana', meaning: 'Vận mệnh, chu kỳ, bước ngoặt số phận, may rủi.' },
+  { id: 'ar11', name: 'Justice', label: 'Số XI · Major Arcana', meaning: 'Công bằng, sự thật, nguyên nhân và kết quả, cân bằng.' },
+  { id: 'ar12', name: 'The Hanged Man', label: 'Số XII · Major Arcana', meaning: 'Buông bỏ, hy sinh, quan điểm mới, chờ đợi.' },
+  { id: 'ar13', name: 'Death', label: 'Số XIII · Major Arcana', meaning: 'Chuyển đổi, kết thúc và bắt đầu, sự thay đổi sâu sắc tất yếu.' },
+  { id: 'ar14', name: 'Temperance', label: 'Số XIV · Major Arcana', meaning: 'Cân bằng, điều độ, kiên nhẫn, mục đích cao cả.' },
+  { id: 'ar15', name: 'The Devil', label: 'Số XV · Major Arcana', meaning: 'Ràng buộc, bóng tối, vật chất, những xiềng xích vô hình.' },
+  { id: 'ar16', name: 'The Tower', label: 'Số XVI · Major Arcana', meaning: 'Đột biến, sụp đổ bất ngờ, giải phóng khỏi ảo tưởng.' },
+  { id: 'ar17', name: 'The Star', label: 'Số XVII · Major Arcana', meaning: 'Hy vọng, cảm hứng, thanh thản, niềm tin vào tương lai.' },
+  { id: 'ar18', name: 'The Moon', label: 'Số XVIII · Major Arcana', meaning: 'Ảo giác, vô thức, nỗi sợ hãi, sự mơ hồ khó đoán.' },
+  { id: 'ar19', name: 'The Sun', label: 'Số XIX · Major Arcana', meaning: 'Niềm vui, thành công, sự rõ ràng, sinh lực dồi dào.' },
+  { id: 'ar20', name: 'Judgement', label: 'Số XX · Major Arcana', meaning: 'Thức tỉnh, suy nghĩ lại, tha thứ, lời kêu gọi số phận.' },
+  { id: 'ar21', name: 'The World', label: 'Số XXI · Major Arcana', meaning: 'Hoàn thành, tích hợp, viên mãn, sự trọn vẹn.' },
+  // Wands
+  { id: 'wa01', name: 'Ace of Wands', label: 'Ace · Wands', meaning: 'Nguồn cảm hứng mới, tiềm năng sáng tạo, khởi đầu đầy nhiệt huyết.' },
+  { id: 'wa02', name: 'Two of Wands', label: 'Hai · Wands', meaning: 'Kế hoạch tương lai, dũng cảm bước ra khỏi vùng an toàn.' },
+  { id: 'wa03', name: 'Three of Wands', label: 'Ba · Wands', meaning: 'Mở rộng tầm nhìn, cơ hội đang đến, tiến trình thuận lợi.' },
+  { id: 'wa04', name: 'Four of Wands', label: 'Bốn · Wands', meaning: 'Lễ kỷ niệm, hòa hợp, sự ổn định nền tảng trong cộng đồng.' },
+  { id: 'wa05', name: 'Five of Wands', label: 'Năm · Wands', meaning: 'Xung đột, cạnh tranh, bất đồng quan điểm.' },
+  { id: 'wa06', name: 'Six of Wands', label: 'Sáu · Wands', meaning: 'Chiến thắng, được công nhận, tự tin tiến bước.' },
+  { id: 'wa07', name: 'Seven of Wands', label: 'Bảy · Wands', meaning: 'Kiên trì giữ vững lập trường, bảo vệ những gì mình tin.' },
+  { id: 'wa08', name: 'Eight of Wands', label: 'Tám · Wands', meaning: 'Tốc độ, hành động nhanh chóng, tin tức sắp tới.' },
+  { id: 'wa09', name: 'Nine of Wands', label: 'Chín · Wands', meaning: 'Kiên cường, sức đề kháng, bảo vệ sau nhiều thử thách.' },
+  { id: 'wa10', name: 'Ten of Wands', label: 'Mười · Wands', meaning: 'Gánh nặng trách nhiệm, áp lực, sắp đến đích.' },
+  { id: 'wapa', name: 'Page of Wands', label: 'Page · Wands', meaning: 'Tinh thần tự do, ham mê khám phá, thông điệp tươi mới.' },
+  { id: 'wakn', name: 'Knight of Wands', label: 'Knight · Wands', meaning: 'Hành động táo bạo, nhiệt tình bốc đồng, mạo hiểm phiêu lưu.' },
+  { id: 'waqu', name: 'Queen of Wands', label: 'Queen · Wands', meaning: 'Tự tin, quyến rũ, đam mê, lãnh đạo đầy cảm hứng.' },
+  { id: 'waki', name: 'King of Wands', label: 'King · Wands', meaning: 'Tầm nhìn xa, lãnh đạo có uy quyền, tháo vát và quyết đoán.' },
+  // Cups
+  { id: 'cu01', name: 'Ace of Cups', label: 'Ace · Cups', meaning: 'Tình yêu mới, cảm xúc phong phú, trực giác khai mở.' },
+  { id: 'cu02', name: 'Two of Cups', label: 'Hai · Cups', meaning: 'Quan hệ đôi lứa, kết nối sâu sắc, hợp tác hài hòa.' },
+  { id: 'cu03', name: 'Three of Cups', label: 'Ba · Cups', meaning: 'Tình bạn, vui mừng, ăn mừng cùng nhau.' },
+  { id: 'cu04', name: 'Four of Cups', label: 'Bốn · Cups', meaning: 'Thiếu quan tâm, mất kết nối, cần nhìn nhận lại xung quanh.' },
+  { id: 'cu05', name: 'Five of Cups', label: 'Năm · Cups', meaning: 'Tiếc nuối mất mát, nhưng vẫn còn điều tốt đẹp phía sau.' },
+  { id: 'cu06', name: 'Six of Cups', label: 'Sáu · Cups', meaning: 'Hoài niệm, ký ức ngọt ngào, sự đơn thuần của quá khứ.' },
+  { id: 'cu07', name: 'Seven of Cups', label: 'Bảy · Cups', meaning: 'Ảo tưởng, nhiều lựa chọn mơ hồ, cần tập trung thực tế.' },
+  { id: 'cu08', name: 'Eight of Cups', label: 'Tám · Cups', meaning: 'Rời bỏ điều cũ để tìm kiếm ý nghĩa sâu hơn.' },
+  { id: 'cu09', name: 'Nine of Cups', label: 'Chín · Cups', meaning: 'Ước nguyện thành hiện thực, thỏa mãn, niềm vui trọn vẹn.' },
+  { id: 'cu10', name: 'Ten of Cups', label: 'Mười · Cups', meaning: 'Hạnh phúc gia đình, bình yên lâu dài, tình yêu viên mãn.' },
+  { id: 'cupa', name: 'Page of Cups', label: 'Page · Cups', meaning: 'Nhạy cảm, thông điệp cảm xúc, trực giác mới nảy sinh.' },
+  { id: 'cukn', name: 'Knight of Cups', label: 'Knight · Cups', meaning: 'Lãng mạn, lý tưởng, theo đuổi điều con tim mách bảo.' },
+  { id: 'cuqu', name: 'Queen of Cups', label: 'Queen · Cups', meaning: 'Đồng cảm sâu sắc, nuôi dưỡng, trực giác nữ tính.' },
+  { id: 'cuki', name: 'King of Cups', label: 'King · Cups', meaning: 'Khôn ngoan cảm xúc, kiên nhẫn, bình tĩnh trước sóng gió.' },
+  // Swords
+  { id: 'sw01', name: 'Ace of Swords', label: 'Ace · Swords', meaning: 'Tư duy rõ ràng, sự thật phơi bày, đột phá trí tuệ.' },
+  { id: 'sw02', name: 'Two of Swords', label: 'Hai · Swords', meaning: 'Bế tắc, lưỡng lự, né tránh quyết định khó khăn.' },
+  { id: 'sw03', name: 'Three of Swords', label: 'Ba · Swords', meaning: 'Đau buồn, mất mát, tan vỡ — nhưng cần thiết để chữa lành.' },
+  { id: 'sw04', name: 'Four of Swords', label: 'Bốn · Swords', meaning: 'Nghỉ ngơi, hồi phục, lùi lại để tái tạo năng lượng.' },
+  { id: 'sw05', name: 'Five of Swords', label: 'Năm · Swords', meaning: 'Xung đột, chiến thắng rỗng tuếch, hậu quả của tham vọng.' },
+  { id: 'sw06', name: 'Six of Swords', label: 'Sáu · Swords', meaning: 'Chuyển đổi, rời bỏ khó khăn, hướng tới bình yên hơn.' },
+  { id: 'sw07', name: 'Seven of Swords', label: 'Bảy · Swords', meaning: 'Lén lút, chiến lược khéo léo, đôi khi là sự gian dối.' },
+  { id: 'sw08', name: 'Eight of Swords', label: 'Tám · Swords', meaning: 'Tự giam cầm, sợ hãi, bị ràng buộc bởi suy nghĩ tiêu cực.' },
+  { id: 'sw09', name: 'Nine of Swords', label: 'Chín · Swords', meaning: 'Lo âu, ác mộng, nỗi sợ phóng đại trong đêm tối tâm hồn.' },
+  { id: 'sw10', name: 'Ten of Swords', label: 'Mười · Swords', meaning: 'Kết thúc đau đớn, nhưng là nền tảng cho chu kỳ mới.' },
+  { id: 'swpa', name: 'Page of Swords', label: 'Page · Swords', meaning: 'Tò mò, lanh lợi, truyền đạt tin tức và ý tưởng mới.' },
+  { id: 'swkn', name: 'Knight of Swords', label: 'Knight · Swords', meaning: 'Hành động quyết liệt, tư duy sắc bén, đôi khi vội vàng.' },
+  { id: 'swqu', name: 'Queen of Swords', label: 'Queen · Swords', meaning: 'Trí tuệ độc lập, thẳng thắn, công minh và sắc sảo.' },
+  { id: 'swki', name: 'King of Swords', label: 'King · Swords', meaning: 'Quyền lực trí tuệ, đạo đức, tư duy phân tích vượt trội.' },
+  // Pentacles
+  { id: 'pe01', name: 'Ace of Pentacles', label: 'Ace · Pentacles', meaning: 'Cơ hội vật chất mới, thịnh vượng, nền tảng vững chắc.' },
+  { id: 'pe02', name: 'Two of Pentacles', label: 'Hai · Pentacles', meaning: 'Cân bằng, xoay xở linh hoạt, quản lý nhiều việc cùng lúc.' },
+  { id: 'pe03', name: 'Three of Pentacles', label: 'Ba · Pentacles', meaning: 'Làm việc nhóm, học nghề, kỹ năng được công nhận.' },
+  { id: 'pe04', name: 'Four of Pentacles', label: 'Bốn · Pentacles', meaning: 'Kiểm soát tài chính, an toàn nhưng có thể bị kẹt bởi tích lũy.' },
+  { id: 'pe05', name: 'Five of Pentacles', label: 'Năm · Pentacles', meaning: 'Khó khăn tài chính, cô đơn, nhưng sự giúp đỡ vẫn ở gần.' },
+  { id: 'pe06', name: 'Six of Pentacles', label: 'Sáu · Pentacles', meaning: 'Hào phóng, chia sẻ, cân bằng giữa cho và nhận.' },
+  { id: 'pe07', name: 'Seven of Pentacles', label: 'Bảy · Pentacles', meaning: 'Kiên nhẫn chờ kết quả, đánh giá công sức đã bỏ ra.' },
+  { id: 'pe08', name: 'Eight of Pentacles', label: 'Tám · Pentacles', meaning: 'Chăm chỉ, hoàn thiện kỹ năng, tập trung vào thành thạo.' },
+  { id: 'pe09', name: 'Nine of Pentacles', label: 'Chín · Pentacles', meaning: 'Tự lập, thành công nhờ bản thân, sự xa hoa tinh tế.' },
+  { id: 'pe10', name: 'Ten of Pentacles', label: 'Mười · Pentacles', meaning: 'Di sản, thịnh vượng gia đình, sự bền vững lâu dài.' },
+  { id: 'pepa', name: 'Page of Pentacles', label: 'Page · Pentacles', meaning: 'Học hỏi kiên nhẫn, cơ hội thực tế, tư duy cẩn thận.' },
+  { id: 'pekn', name: 'Knight of Pentacles', label: 'Knight · Pentacles', meaning: 'Đáng tin cậy, siêng năng, tiến bộ chậm mà chắc.' },
+  { id: 'pequ', name: 'Queen of Pentacles', label: 'Queen · Pentacles', meaning: 'Thực tế, chăm sóc, làm việc với thiên nhiên và vật chất.' },
+  { id: 'peki', name: 'King of Pentacles', label: 'King · Pentacles', meaning: 'Sung túc, khả năng kinh doanh, lãnh đạo tạo ra sự ổn định.' },
+];
+
+const IMG_BASE = 'https://www.sacred-texts.com/tarot/pkt/img/';
+const history = [];
+
+function spawnParticles() {
+  const el = document.getElementById('particles');
+  el.innerHTML = '';
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = (i / count) * 2 * Math.PI + Math.random() * 0.5;
+    const dist = 80 + Math.random() * 80;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    p.style.setProperty('--tx', `${tx}px`);
+    p.style.setProperty('--ty', `${ty}px`);
+    p.style.animationDelay = `${Math.random() * 0.3}s`;
+    p.style.width = `${2 + Math.random() * 4}px`;
+    p.style.height = p.style.width;
+    p.style.opacity = `${0.5 + Math.random() * 0.5}`;
+    el.appendChild(p);
+  }
+}
+
+function addToHistory(card, reversed, imgUrl) {
+  history.unshift({ card, reversed, imgUrl });
+  if (history.length > 7) history.pop();
+
+  const row = document.getElementById('historyRow');
+  const label = document.getElementById('histLabel');
+  label.style.display = 'block';
+  row.innerHTML = '';
+
+  history.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'history-card' + (item.reversed ? ' rev' : '');
+    const img = document.createElement('img');
+    img.src = item.imgUrl;
+    img.alt = item.card.name;
+    div.appendChild(img);
+    row.appendChild(div);
+    setTimeout(() => div.classList.add('show'), i * 60 + 100);
+  });
+}
+
+function drawCard() {
+  const btn = document.getElementById('btnDraw');
+  btn.classList.add('spinning');
+  btn.textContent = '⟳ Đang rút...';
+
+  const idx = Math.floor(Math.random() * CARDS.length);
+  const card = CARDS[idx];
+  const reversed = Math.random() < 0.3;
+  const imgUrl = IMG_BASE + card.id + '.jpg';
+
+  // Reset flip container
+  const flipEl = document.getElementById('cardFlip');
+  const placeholder = document.getElementById('placeholder');
+  const cardInfo = document.getElementById('cardInfo');
+
+  flipEl.className = 'card-flip-container';
+  cardInfo.className = 'card-info';
+
+  setTimeout(() => {
+    // Update image
+    const imgEl = document.getElementById('cardImg');
+    imgEl.src = imgUrl;
+    imgEl.alt = card.name;
+    imgEl.className = 'card-img' + (reversed ? ' reversed' : '');
+
+    // Trigger animation
+    placeholder.classList.add('hidden');
+    flipEl.classList.add('revealed');
+
+    // Particles
+    spawnParticles();
+
+    // Show info
+    setTimeout(() => {
+      document.getElementById('cardNumber').textContent = card.label;
+      document.getElementById('cardName').textContent = card.name;
+      const badge = document.getElementById('orientBadge');
+      badge.textContent = reversed ? '↓ Ngược' : '↑ Xuôi';
+      badge.className = 'orientation-badge ' + (reversed ? 'reversed' : 'upright');
+      document.getElementById('cardMeaning').textContent = card.meaning;
+      cardInfo.classList.add('visible');
+
+      // History
+      addToHistory(card, reversed, imgUrl);
+
+      // Re-enable button
+      btn.classList.remove('spinning');
+      btn.innerHTML = '<span class="btn-icon">✦</span>Rút Bài Khác';
+    }, 700);
+
+  }, 200);
+}
+</script>
+</body>
+</html>
