@@ -697,8 +697,10 @@ function drawCard() {
   const idx = Math.floor(Math.random() * CARDS.length);
   const card = CARDS[idx];
   const reversed = Math.random() < 0.3;
-  const imgUrl = './tarot/card/00_lovers.jpg';
-  console.log('IMG:', imgUrl);
+  const imgUrl = IMG_BASE + card.id + '.jpg';
+  console.log('Tên lá:', card.name);
+  console.log('ID:', card.id);
+  console.log('Đường dẫn:', imgUrl);
 
   // Reset flip container
   const flipEl = document.getElementById('cardFlip');
