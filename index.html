@@ -21,6 +21,40 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
+
+    <!-- ================= GAME WORLD BACKGROUND ================= -->
+<div class="game-world">
+
+  <!-- Moon -->
+  <div class="moon">
+    <div class="moon-crater crater-1"></div>
+    <div class="moon-crater crater-2"></div>
+    <div class="moon-crater crater-3"></div>
+  </div>
+
+  <!-- Distant mountains -->
+  <div class="mountains mountains-back"></div>
+  <div class="mountains mountains-front"></div>
+
+  <!-- Floating mist -->
+  <div class="mist mist-1"></div>
+  <div class="mist mist-2"></div>
+  <div class="mist mist-3"></div>
+
+  <!-- Fireflies -->
+  <div class="fireflies" id="fireflies"></div>
+
+  <!-- Foreground trees -->
+  <div class="tree tree-left"></div>
+  <div class="tree tree-right"></div>
+
+  <!-- Ground -->
+  <div class="game-ground"></div>
+
+</div>
+
+
+    
     background: var(--ink);
     color: #d4c5a9;
     font-family: 'EB Garamond', serif;
@@ -469,6 +503,559 @@
     text-transform: uppercase;
     color: rgba(201,168,76,0.2);
     text-align: center;
+
+    /* =========================================================
+   2D FANTASY GAME WORLD
+   ========================================================= */
+
+.game-world {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -5;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to bottom,
+      #070818 0%,
+      #0d1028 35%,
+      #17142d 65%,
+      #09070f 100%
+    );
+}
+
+/* Dark cinematic overlay */
+
+.game-world::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at center 40%,
+      transparent 20%,
+      rgba(3,2,10,.35) 65%,
+      rgba(0,0,0,.85) 100%
+    );
+  z-index: 20;
+}
+
+/* =========================================================
+   MOON
+   ========================================================= */
+
+.moon {
+  position: absolute;
+
+  width: 190px;
+  height: 190px;
+
+  top: 9%;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff9dc 0%,
+      #e9dfb5 45%,
+      #b6a97d 100%
+    );
+
+  box-shadow:
+    0 0 25px rgba(255,240,180,.35),
+    0 0 80px rgba(220,210,160,.18),
+    0 0 150px rgba(180,170,120,.1);
+
+  animation: moonFloat 8s ease-in-out infinite;
+}
+
+@keyframes moonFloat {
+
+  0%,100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(8px);
+  }
+
+}
+
+.moon-crater {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(120,110,80,.12);
+}
+
+.crater-1 {
+  width: 35px;
+  height: 35px;
+  left: 30px;
+  top: 50px;
+}
+
+.crater-2 {
+  width: 22px;
+  height: 22px;
+  right: 35px;
+  top: 85px;
+}
+
+.crater-3 {
+  width: 45px;
+  height: 25px;
+  left: 80px;
+  bottom: 30px;
+}
+
+/* =========================================================
+   MOUNTAINS
+   ========================================================= */
+
+.mountains {
+  position: absolute;
+  bottom: 22%;
+  left: -10%;
+  width: 120%;
+  height: 35%;
+}
+
+.mountains-back {
+
+  opacity: .35;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 48%,
+      #121329 49%,
+      #121329 65%,
+      transparent 66%
+    );
+
+  clip-path: polygon(
+    0 100%,
+    8% 55%,
+    18% 75%,
+    29% 35%,
+    40% 72%,
+    52% 30%,
+    63% 70%,
+    76% 40%,
+    87% 68%,
+    100% 45%,
+    100% 100%
+  );
+
+  animation: mountainMove 20s ease-in-out infinite alternate;
+}
+
+.mountains-front {
+
+  bottom: 14%;
+  height: 28%;
+
+  opacity: .8;
+
+  background: #090916;
+
+  clip-path: polygon(
+    0 100%,
+    6% 70%,
+    15% 82%,
+    25% 50%,
+    36% 76%,
+    48% 42%,
+    58% 78%,
+    70% 52%,
+    82% 75%,
+    92% 45%,
+    100% 68%,
+    100% 100%
+  );
+
+}
+
+@keyframes mountainMove {
+
+  from {
+    transform: translateX(-20px);
+  }
+
+  to {
+    transform: translateX(20px);
+  }
+
+}
+
+/* =========================================================
+   MIST
+   ========================================================= */
+
+.mist {
+
+  position: absolute;
+
+  width: 700px;
+  height: 130px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(170,165,190,.13),
+      transparent 70%
+    );
+
+  filter: blur(15px);
+
+  opacity: .6;
+
+}
+
+.mist-1 {
+  bottom: 25%;
+  left: -300px;
+  animation: mistMove1 25s linear infinite;
+}
+
+.mist-2 {
+  bottom: 35%;
+  left: -500px;
+  opacity: .35;
+  animation: mistMove2 35s linear infinite;
+}
+
+.mist-3 {
+  bottom: 18%;
+  left: -400px;
+  opacity: .25;
+  animation: mistMove1 40s linear infinite reverse;
+}
+
+@keyframes mistMove1 {
+
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(100vw + 800px));
+  }
+
+}
+
+@keyframes mistMove2 {
+
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(100vw + 1000px));
+  }
+
+}
+
+/* =========================================================
+   FOREGROUND TREES
+   ========================================================= */
+
+.tree {
+
+  position: absolute;
+
+  bottom: 8%;
+
+  width: 170px;
+  height: 420px;
+
+  opacity: .9;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 43%,
+      #05040a 44%,
+      #05040a 56%,
+      transparent 57%
+    );
+
+}
+
+/* tree branches */
+
+.tree::before,
+.tree::after {
+
+  content: "";
+
+  position: absolute;
+
+  background: #05040a;
+
+  transform-origin: bottom;
+
+}
+
+.tree::before {
+
+  width: 130px;
+  height: 25px;
+
+  bottom: 250px;
+  left: 20px;
+
+  transform: rotate(-28deg);
+
+  box-shadow:
+    50px -70px 0 #05040a,
+    20px -130px 0 #05040a;
+
+}
+
+.tree::after {
+
+  width: 120px;
+  height: 22px;
+
+  bottom: 180px;
+  left: 40px;
+
+  transform: rotate(25deg);
+
+  box-shadow:
+    -20px -80px 0 #05040a,
+    30px -150px 0 #05040a;
+
+}
+
+.tree-left {
+  left: -90px;
+  transform: scale(1.2);
+}
+
+.tree-right {
+  right: -90px;
+  transform: scaleX(-1) scale(1.2);
+}
+
+/* =========================================================
+   GROUND
+   ========================================================= */
+
+.game-ground {
+
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: 20%;
+
+  background:
+    linear-gradient(
+      to top,
+      #030207,
+      rgba(5,4,12,.85),
+      transparent
+    );
+
+}
+
+/* =========================================================
+   FIREFLIES
+   ========================================================= */
+
+.fireflies {
+
+  position: absolute;
+  inset: 0;
+
+}
+
+.firefly {
+
+  position: absolute;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #e8cc7a;
+
+  box-shadow:
+    0 0 6px #e8cc7a,
+    0 0 15px rgba(232,204,122,.7);
+
+  animation:
+    fireflyFloat var(--duration) ease-in-out infinite,
+    fireflyGlow 2s ease-in-out infinite alternate;
+
+}
+
+@keyframes fireflyFloat {
+
+  0%,100% {
+    transform:
+      translate(0,0);
+  }
+
+  25% {
+    transform:
+      translate(30px,-40px);
+  }
+
+  50% {
+    transform:
+      translate(-20px,-80px);
+  }
+
+  75% {
+    transform:
+      translate(40px,-50px);
+  }
+
+}
+
+@keyframes fireflyGlow {
+
+  from {
+    opacity: .15;
+    transform: scale(.7);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+
+}
+
+/* =========================================================
+   PARALLAX
+   ========================================================= */
+
+body {
+  perspective: 1000px;
+}
+
+.game-world {
+  transition: transform .15s ease-out;
+}
+
+/* Make content feel like it's floating in the game world */
+
+.wrapper {
+  transition:
+    transform .2s ease-out;
+}
+
+/* =========================================================
+   CARD MORE GAME-LIKE
+   ========================================================= */
+
+.card-slot {
+
+  filter:
+    drop-shadow(
+      0 20px 30px rgba(0,0,0,.7)
+    );
+
+}
+
+.card-flip-container.revealed {
+
+  animation:
+    cardReveal 1s cubic-bezier(.34,1.56,.64,1) forwards,
+    cardFloat 4s ease-in-out 1s infinite;
+
+}
+
+@keyframes cardFloat {
+
+  0%,100% {
+    transform:
+      translateY(0)
+      rotateZ(0deg);
+  }
+
+  50% {
+    transform:
+      translateY(-8px)
+      rotateZ(.5deg);
+  }
+
+}
+
+/* Stronger magical glow */
+
+.card-glow {
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(201,168,76,.35) 0%,
+      rgba(120,80,180,.12) 35%,
+      transparent 70%
+    );
+
+  filter: blur(5px);
+
+}
+
+/* =========================================================
+   DRAW BUTTON
+   ========================================================= */
+
+.btn-draw {
+
+  transition:
+    transform .2s ease,
+    box-shadow .3s ease;
+
+}
+
+.btn-draw:hover {
+
+  transform:
+    translateY(-4px)
+    scale(1.03);
+
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:600px) {
+
+  .moon {
+    width: 130px;
+    height: 130px;
+    top: 8%;
+  }
+
+  .tree {
+    opacity: .65;
+    transform: scale(.75);
+  }
+
+  .tree-right {
+    transform: scaleX(-1) scale(.75);
+  }
+
+  .wrapper {
+    padding-top: 2rem;
+  }
   }
 </style>
 </head>
@@ -743,6 +1330,44 @@ function drawCard() {
     }, 700);
 
   }, 200);
+
+  /* =========================================================
+   CREATE FIREFLIES
+   ========================================================= */
+
+function createFireflies() {
+
+  const container = document.getElementById('fireflies');
+
+  const count = window.innerWidth < 600 ? 18 : 35;
+
+  for (let i = 0; i < count; i++) {
+
+    const firefly = document.createElement('div');
+
+    firefly.className = 'firefly';
+
+    firefly.style.left =
+      `${Math.random() * 100}%`;
+
+    firefly.style.top =
+      `${35 + Math.random() * 55}%`;
+
+    firefly.style.setProperty(
+      '--duration',
+      `${6 + Math.random() * 8}s`
+    );
+
+    firefly.style.animationDelay =
+      `${Math.random() * 8}s`;
+
+    container.appendChild(firefly);
+
+  }
+
+}
+
+createFireflies();
 }
 </script>
 </body>
